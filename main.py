@@ -1,11 +1,11 @@
 import os
-from flask import Flask
 from threading import Thread
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from flask import Flask
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 
 TOKEN = os.getenv("BOT_TOKEN")
-ADMIN_ID = int(os.getenv("ADMIN_ID", "0"))
+ADMIN_ID = os.getenv("ADMIN_ID")
 
 app = Flask(__name__)
 
@@ -19,20 +19,17 @@ PRODUCTS = {
     "💎 2400 Алмаз": 210,
 }
 
-user_data = {}
-
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = [[InlineKeyboardButton(k, callback_data=k) for k in PRODUCTS.keys()]]
+    keyboard = [[InlineKeyboardButton(name, callback_data=name)] for name in PRODUCTS.keys()]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    text = "💎 NAZAROV SHOP DONAT TJ 💎\nТанланг:"
-    await update.message.reply_text(text, reply_markup=reply_markup)
+    await update.message.reply_text("💎 NAZAROV SHOP DONAT TJ\n\nАлмаз танланг:", reply_markup=reply_markup)
 
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     prod = query.data
-    price = PRODUCTS[prod]
-    await query.message.reply_text(f"Сиз танладингиз: {prod}\nНархи: {price} сомони\n\nАдминга ёзинг: @nazarov_shop")
+    price = PRODUCTS.get(prod, 0)
+    await query.message.reply_text(f"Сиз танладингиз: {prod}\nНархи: {price} сомон")
 
 def run_bot():
     application = Application.builder().token(TOKEN).build()
@@ -41,5 +38,5 @@ def run_bot():
     application.run_polling()
 
 if __name__ == "__main__":
-    Thread(target=lambda: app.run(host="0.0.0.0", port=10000)).start()
+    Thread(target=lambda: app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))).start()
     run_bot()
