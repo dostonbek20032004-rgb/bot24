@@ -1,14 +1,17 @@
 import os
 from flask import Flask
-from threading import ThrАлrom teАлмэram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, ContextTypes
+from threading import Thread
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 
 TOKEN = os.getenv("BOT_TOKEN")
 ADMIN_ID = int(os.getenv("ADMIN_ID", "0"))
 
 app = Flask(__name__)
+
 @app.route('/')
-def home(): return "Bot is running!"
+def home():
+    return "Bot is running!"
 
 PRODUCTS = {
     "💎 570 Алмаз": 55,
@@ -19,22 +22,24 @@ PRODUCTS = {
 user_data = {}
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = [[InlineKeyboardButton(k, callback_data=k)] for k in PRODUCTS.keys()]
-    text = "💎 NAZAROV SHOP DONAT TJ 💎\n\nСалом! Хуш омадед!\n👇 Товарро интихоб кунед:"
-    await update.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard))
+    keyboard = [[InlineKeyboardButton(k, callback_data=k) for k in PRODUCTS.keys()]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    text = "💎 NAZAROV SHOP DONAT TJ 💎\nТанланг:"
+    await update.message.reply_text(text, reply_markup=reply_markup)
 
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     prod = query.data
     price = PRODUCTS[prod]
-    user_data[query.from_user.id] = {'product': prod, 'price': price}
-    text = f"✅ {prod}\n💰 Нарх: {price} сомонӣ\n\n📝 UID-и худро равон кунед:"
-    await query.message.reply_text(text)
+    await query.message.reply_text(f"Сиз танладингиз: {prod}\nНархи: {price} сомони\n\nАдминга ёзинг: @nazarov_shop")
 
-async def get_uid(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    uid = update.message.text
-    data = user_data.get(update.from_user.id)
-    if not data: return
-    await context.bot.send_message(chat_id=ADMIN_ID, text=f"🔥 ЗАКАЗИ НАВ!\n👤 @{update.from_user.username}\n🎮 UID: {uid}\n📦 {data['product']}\n💰 {data['price']}")
-    await update.message.reply_text("✅ Кабул шуд! Админ тез орада алоқа қи
+def run_bot():
+    application = Application.builder().token(TOKEN).build()
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CallbackQueryHandler(button))
+    application.run_polling()
+
+if __name__ == "__main__":
+    Thread(target=lambda: app.run(host="0.0.0.0", port=10000)).start()
+    run_bot()
