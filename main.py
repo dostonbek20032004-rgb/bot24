@@ -36,7 +36,6 @@ def run_bot():
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CallbackQueryHandler(button))
     application.run_polling()
-
 if __name__ == "__main__":
     Thread(target=lambda: app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))).start()
     run_bot()
