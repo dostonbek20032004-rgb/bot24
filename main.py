@@ -1,33 +1,21 @@
 import os
-from telegram import Update
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 from flask import Flask
-import threading
+from threading import Thread
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, ContextTypes
 
 TOKEN = os.getenv("BOT_TOKEN")
+ADMIN_ID = int(os.getenv("ADMIN_ID", "0"))
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Salom! Bot ishlayapti!")
+app = Flask(__name__)
+@app.route('/')
+def home(): return "Bot is running!"
 
-async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(f"Siz yozdingiz: {update.message.text}")
-
-# Render uchun web server
-flask_app = Flask(__name__)
-@flask_app.route('/')
-def home():
-    return "Bot ishlayapti!"
-
-def run_flask():
-    flask_app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 10000)))
-
-def main():
-    threading.Thread(target=run_flask).start()
-    app = Application.builder().token(TOKEN).build()
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
-    print("Bot ishga tushdi...")
-    app.run_polling()
-
-if __name__ == "__main__":
-    main()
+PRODUCTS = {
+    "💎 570 UC": 55,
+    "💎 1170 UC": 110,
+    "💎 2400 UC": 210,
+    "💎 6200 UC": 570,
+    "🌙 МОХОНА 2600": 70,
+    "📅 НЕДЕЛЯ 450": 20,
+    "
