@@ -31,7 +31,9 @@ def run_bot():
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CallbackQueryHandler(button))
     application.run_polling()
+def run_flask():
+    app.run(host="0.0.0.0", port=10000)
 
 if __name__ == "__main__":
-    Thread(target=lambda: app.run(host="0.0.0.0", port=10000)).start()
+    Thread(target=run_flask).start()
     run_bot()
