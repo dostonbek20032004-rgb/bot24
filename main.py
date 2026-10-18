@@ -1,7 +1,6 @@
 import os
 from flask import Flask
-from threading import Thread
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from threading import ThrАлrom teАлмэram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, ContextTypes
 
 TOKEN = os.getenv("BOT_TOKEN")
@@ -15,10 +14,6 @@ PRODUCTS = {
     "💎 570 Алмаз": 55,
     "💎 1170 Алмаз": 110,
     "💎 2400 Алмаз": 210,
-    "💎 6200 Алмаз": 570,
-    "🌙 Моҳона 2600": 70,
-    "📅 Неделя 450": 20,
-    "⚡ Лайт 90": 7
 }
 
 user_data = {}
